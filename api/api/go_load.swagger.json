@@ -1,0 +1,162 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "api/go_load.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "YourService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {},
+  "definitions": {
+    "go_loadCreateAccountResponse": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "format": "uint64"
+        }
+      }
+    },
+    "go_loadCreateDownloadTaskResponse": {
+      "type": "object",
+      "properties": {
+        "downloadTask": {
+          "$ref": "#/definitions/go_loadDownloadTask"
+        }
+      }
+    },
+    "go_loadCreateSessionResponse": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string"
+        }
+      }
+    },
+    "go_loadDeleteDownloadTaskResponse": {
+      "type": "object"
+    },
+    "go_loadDownloadStatus": {
+      "type": "string",
+      "enum": [
+        "UndefinedStatus",
+        "Pending",
+        "Downloading",
+        "Failed",
+        "Success"
+      ],
+      "default": "UndefinedStatus"
+    },
+    "go_loadDownloadTask": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "ofUser": {
+          "$ref": "#/definitions/go_loadUser"
+        },
+        "downloadType": {
+          "$ref": "#/definitions/go_loadDownloadType"
+        },
+        "url": {
+          "type": "string"
+        },
+        "downloadStatus": {
+          "$ref": "#/definitions/go_loadDownloadStatus"
+        }
+      }
+    },
+    "go_loadDownloadType": {
+      "type": "string",
+      "enum": [
+        "UndefinedType",
+        "HTTP"
+      ],
+      "default": "UndefinedType"
+    },
+    "go_loadGetDownloadTaskFileResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "go_loadGetDownloadTaskResponse": {
+      "type": "object",
+      "properties": {
+        "downloadTasks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/go_loadDownloadTask"
+          }
+        },
+        "totalDownloadTaskCount": {
+          "type": "string",
+          "format": "uint64"
+        }
+      }
+    },
+    "go_loadUpdateDownloadTaskResponse": {
+      "type": "object",
+      "properties": {
+        "downloadTask": {
+          "$ref": "#/definitions/go_loadDownloadTask"
+        }
+      }
+    },
+    "go_loadUser": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "username": {
+          "type": "string"
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}
