@@ -8,14 +8,14 @@ import (
 )
 
 type Account struct {
-	UserID   uint64 `sql:"user_id"`
-	Username string `sql:"username"`
+	AccountID   uint64 `sql:"account_id"`
+	Accountname string `sql:"accountname"`
 }
 
 type AccountDataAccessor interface {
 	CreateAccount(ctx context.Context, account Account) (uint64, error)
 	GetAccountByID(ctx context.Context, id uint64) (Account, error)
-	GetAccountByUsername(ctx context.Context, username string) (Account, error)
+	GetAccountByAccountname(ctx context.Context, accountname string) (Account, error)
 }
 
 type accountDataAccessor struct {
@@ -30,7 +30,7 @@ func (a accountDataAccessor) CreateAccount(ctx context.Context, account Account)
 	result, err := a.database.
 		Insert("accounts").
 		Rows(goqu.Record{
-			"username": account.Username,
+			"accountname": account.Accountname,
 		}).
 		Executor().
 		ExecContext(ctx)
@@ -53,7 +53,7 @@ func (a *accountDataAccessor) GetAccountByID(ctx context.Context, id uint64) (Ac
 	return Account{}, nil
 }
 
-func (a *accountDataAccessor) GetAccountByUsername(ctx context.Context, username string) (Account, error) {
+func (a *accountDataAccessor) GetAccountByAccountname(ctx context.Context, accountname string) (Account, error) {
 	// Implement the method
 	return Account{}, nil
 }

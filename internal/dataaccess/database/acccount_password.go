@@ -7,13 +7,13 @@ import (
 )
 
 type AccountPassword struct {
-	OfUserID uint64 `sql:"of_user_id"`
-	Hash     string `sql:"hash"`
+	OfAccountID uint64 `sql:"of_account_id"`
+	Hash        string `sql:"hash"`
 }
 
 type AccountPasswordDataAccessor interface {
-	CreateUserPassword(ctx context.Context, accountPass AccountPassword) error
-	UpdateUserPassword(ctx context.Context, accountPass AccountPassword) error
+	CreateAccountPassword(ctx context.Context, accountPass AccountPassword) error
+	UpdateAccountPassword(ctx context.Context, accountPass AccountPassword) error
 }
 
 type accountPasswordDataAccessor struct {
@@ -26,10 +26,10 @@ func NewAccountPasswordDataAccessor(database *goqu.Database) AccountPasswordData
 	}
 }
 
-func (a *accountPasswordDataAccessor) CreateUserPassword(ctx context.Context, accountPass AccountPassword) error {
+func (a *accountPasswordDataAccessor) CreateAccountPassword(ctx context.Context, accountPass AccountPassword) error {
 	panic("unimplemented")
 }
 
-func (a *accountPasswordDataAccessor) UpdateUserPassword(ctx context.Context, accountPass AccountPassword) error {
+func (a *accountPasswordDataAccessor) UpdateAccountPassword(ctx context.Context, accountPass AccountPassword) error {
 	panic("unimplemented")
 }

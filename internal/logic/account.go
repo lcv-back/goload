@@ -9,17 +9,17 @@ import (
 )
 
 type CreateAccountParams struct {
-	Username  string
-	Passoword string
+	AccountName string
+	Password    string
 }
 
-type User struct {
-	ID       uint64
-	Username string
+type CreateAccountOutput struct {
+	ID          uint64
+	AccountName string
 }
 
 type Account interface {
-	CreateAccount(ctx context.Context, params CreateAccountParams) (User, error)
+	CreateAccount(ctx context.Context, params CreateAccountParams) (CreateAccountOutput, error)
 }
 
 type account struct {
@@ -32,7 +32,7 @@ func NewAccount(
 	accountDataAccessor database.AccountDataAccessor,
 	accountPasswordDataAccessor database.AccountPasswordDataAccessor,
 	hashLogic Hash,
-) Account {
+) *account {
 	return &account{
 		accountDataAccessor:         accountDataAccessor,
 		accountPasswordDataAccessor: accountPasswordDataAccessor,
@@ -40,8 +40,8 @@ func NewAccount(
 	}
 }
 
-func (a account) isAccountUsernameTaken(ctx context.Context, username string) (bool, error) {
-	if _, err := a.accountDataAccessor.GetAccountByUsername(ctx, username); err != nil {
+func (a account) isAccountAccountnameTaken(ctx context.Context, accountname string) (bool, error) {
+	if _, err := a.accountDataAccessor.GetAccountByAccountname(ctx, accountname); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return false, nil
 		}
@@ -52,40 +52,40 @@ func (a account) isAccountUsernameTaken(ctx context.Context, username string) (b
 	return true, nil
 }
 
-func (a account) CreateAccount(ctx context.Context, params CreateAccountParams) (User, error) {
-	usernameTaken, err := a.isAccountUsernameTaken(ctx, params.Username)
+func (a account) CreateAccount(ctx context.Context, params CreateAccountParams) (CreateAccountOutput, error) {
+	accountnameTaken, err := a.isAccountAccountnameTaken(ctx, params.AccountName)
 
 	if err != nil {
-		return User{}, err
+		return CreateAccountOutput{}, err
 	}
 
-	if usernameTaken {
-		return User{}, errors.New("username already taken")
+	if accountnameTaken {
+		return CreateAccountOutput{}, errors.New("accountname already taken")
 	}
 
 	accountID, err := a.accountDataAccessor.CreateAccount(ctx, database.Account{
-		Username: params.Username,
+		Accountname: params.AccountName,
 	})
 
 	if err != nil {
-		return User{}, err
+		return CreateAccountOutput{}, err
 	}
 
-	hashedPassword, err := a.hashLogic.Hash(ctx, params.Passoword)
+	hashedPassword, err := a.hashLogic.Hash(ctx, params.Password)
 
 	if err != nil {
-		return User{}, err
+		return CreateAccountOutput{}, err
 	}
 
-	if err := a.accountPasswordDataAccessor.CreateUserPassword(ctx, database.AccountPassword{
-		OfUserID: accountID,
-		Hash:     hashedPassword,
+	if err := a.accountPasswordDataAccessor.CreateAccountPassword(ctx, database.AccountPassword{
+		OfAccountID: accountID,
+		Hash:        hashedPassword,
 	}); err != nil {
-		return User{}, err
+		return CreateAccountOutput{}, err
 	}
 
-	return User{
-		ID:       accountID,
-		Username: params.Username,
+	return CreateAccountOutput{
+		ID:          accountID,
+		AccountName: params.AccountName,
 	}, nil
 }

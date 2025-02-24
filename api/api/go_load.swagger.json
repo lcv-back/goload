@@ -20,7 +20,7 @@
     "go_loadCreateAccountResponse": {
       "type": "object",
       "properties": {
-        "userId": {
+        "accountId": {
           "type": "string",
           "format": "uint64"
         }
@@ -63,8 +63,8 @@
           "type": "string",
           "format": "uint64"
         },
-        "ofUser": {
-          "$ref": "#/definitions/go_loadUser"
+        "ofAccount": {
+          "$ref": "#/definitions/go_loadAccount"
         },
         "downloadType": {
           "$ref": "#/definitions/go_loadDownloadType"
@@ -118,14 +118,14 @@
         }
       }
     },
-    "go_loadUser": {
+    "go_loadAccount": {
       "type": "object",
       "properties": {
         "id": {
           "type": "string",
           "format": "uint64"
         },
-        "username": {
+        "accountname": {
           "type": "string"
         }
       }

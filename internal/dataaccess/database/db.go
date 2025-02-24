@@ -11,7 +11,7 @@ import (
 
 func InitializeDB(databaseConfig configs.Database) (db *sql.DB, cleanup func(), err error) {
 	connectionString := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s",
-		databaseConfig.Username,
+		databaseConfig.Accountname,
 		databaseConfig.Password,
 		databaseConfig.Host,
 		databaseConfig.Port,
