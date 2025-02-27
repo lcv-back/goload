@@ -5,14 +5,17 @@ go 1.23.0
 require (
 	github.com/doug-martin/goqu/v9 v9.19.0
 	github.com/envoyproxy/protoc-gen-validate v1.2.1
+	github.com/google/wire v0.6.0
 	github.com/grpc-ecosystem/go-grpc-middleware v1.4.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.26.1
 	golang.org/x/crypto v0.32.0
 	google.golang.org/grpc v1.70.0
 	google.golang.org/protobuf v1.36.5
+	gopkg.in/yaml.v2 v2.2.8
 )
 
 require (
+	github.com/rogpeppe/go-internal v1.14.0 // indirect
 	golang.org/x/net v0.34.0 // indirect
 	golang.org/x/sys v0.29.0 // indirect
 	golang.org/x/text v0.22.0 // indirect

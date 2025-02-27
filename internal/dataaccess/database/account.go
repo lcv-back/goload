@@ -9,17 +9,18 @@ import (
 
 type Account struct {
 	AccountID   uint64 `sql:"account_id"`
-	Accountname string `sql:"accountname"`
+	AccountName string `sql:"accountname"`
 }
 
 type AccountDataAccessor interface {
 	CreateAccount(ctx context.Context, account Account) (uint64, error)
 	GetAccountByID(ctx context.Context, id uint64) (Account, error)
-	GetAccountByAccountname(ctx context.Context, accountname string) (Account, error)
+	GetAccountByAccountName(ctx context.Context, accountName string) (Account, error)
+	WithDatabase(database Database) AccountDataAccessor
 }
 
 type accountDataAccessor struct {
-	database *goqu.Database
+	database Database
 }
 
 func NewAccountDataAccessor(database *goqu.Database) AccountDataAccessor {
@@ -30,7 +31,7 @@ func (a accountDataAccessor) CreateAccount(ctx context.Context, account Account)
 	result, err := a.database.
 		Insert("accounts").
 		Rows(goqu.Record{
-			"accountname": account.Accountname,
+			"accountname": account.AccountName,
 		}).
 		Executor().
 		ExecContext(ctx)
@@ -53,7 +54,13 @@ func (a *accountDataAccessor) GetAccountByID(ctx context.Context, id uint64) (Ac
 	return Account{}, nil
 }
 
-func (a *accountDataAccessor) GetAccountByAccountname(ctx context.Context, accountname string) (Account, error) {
+func (a *accountDataAccessor) GetAccountByAccountName(ctx context.Context, accountName string) (Account, error) {
 	// Implement the method
 	return Account{}, nil
+}
+
+func (a *accountDataAccessor) WithDatabase(database Database) AccountDataAccessor {
+	return &accountDataAccessor{
+		database: database,
+	}
 }

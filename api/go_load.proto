@@ -31,7 +31,7 @@ enum DownloadStatus {
 
 message Account {
     uint64 id = 1;
-    string accountname = 2;
+    string accountName = 2;
 }
 
 message DownloadTask {
@@ -43,7 +43,7 @@ message DownloadTask {
 }
 
 message CreateAccountRequest {
-    string accountname = 1 [(validate.rules).string = {
+    string accountName = 1 [(validate.rules).string = {
         pattern: "^[a-zA-Z0-9]{6,32}$",
     }];
     string password = 2 [(validate.rules).string = {
@@ -56,7 +56,7 @@ message CreateAccountResponse {
 }
 
 message CreateSessionRequest {
-    string accountname = 1 [(validate.rules).string = {
+    string accountName = 1 [(validate.rules).string = {
         pattern: "^[a-zA-Z0-9]{6,32}$",
     }];
     string password = 2 [(validate.rules).string = {

@@ -14,10 +14,11 @@ type AccountPassword struct {
 type AccountPasswordDataAccessor interface {
 	CreateAccountPassword(ctx context.Context, accountPass AccountPassword) error
 	UpdateAccountPassword(ctx context.Context, accountPass AccountPassword) error
+	WithDatabase(database Database) AccountPasswordDataAccessor
 }
 
 type accountPasswordDataAccessor struct {
-	database *goqu.Database
+	database Database
 }
 
 func NewAccountPasswordDataAccessor(database *goqu.Database) AccountPasswordDataAccessor {
@@ -32,4 +33,10 @@ func (a *accountPasswordDataAccessor) CreateAccountPassword(ctx context.Context,
 
 func (a *accountPasswordDataAccessor) UpdateAccountPassword(ctx context.Context, accountPass AccountPassword) error {
 	panic("unimplemented")
+}
+
+func (a accountPasswordDataAccessor) WithDatabase(database Database) AccountPasswordDataAccessor {
+	return &accountPasswordDataAccessor{
+		database: database,
+	}
 }

@@ -22,7 +22,7 @@ func NewHandler(
 
 func (a Handler) CreateAccount(ctx context.Context, request *go_load.CreateAccountRequest) (*go_load.CreateAccountResponse, error) {
 	output, err := a.accountLogic.CreateAccount(ctx, logic.CreateAccountParams{
-		AccountName: request.GetAccountname(),
+		AccountName: request.GetAccountName(),
 		Password:    request.GetPassword(),
 	})
 	if err != nil {

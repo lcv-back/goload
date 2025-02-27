@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 
+	"github.com/doug-martin/goqu/v9"
 	"github.com/lcv-back/goload/internal/dataaccess/database"
 )
 
@@ -23,25 +24,28 @@ type Account interface {
 }
 
 type account struct {
+	goquDatabase                *goqu.Database
 	accountDataAccessor         database.AccountDataAccessor
 	accountPasswordDataAccessor database.AccountPasswordDataAccessor
 	hashLogic                   Hash
 }
 
 func NewAccount(
+	goguDatabase *goqu.Database,
 	accountDataAccessor database.AccountDataAccessor,
 	accountPasswordDataAccessor database.AccountPasswordDataAccessor,
 	hashLogic Hash,
 ) *account {
 	return &account{
+		goquDatabase:                goguDatabase,
 		accountDataAccessor:         accountDataAccessor,
 		accountPasswordDataAccessor: accountPasswordDataAccessor,
 		hashLogic:                   hashLogic,
 	}
 }
 
-func (a account) isAccountAccountnameTaken(ctx context.Context, accountname string) (bool, error) {
-	if _, err := a.accountDataAccessor.GetAccountByAccountname(ctx, accountname); err != nil {
+func (a account) isAccountAccountNameTaken(ctx context.Context, accountName string) (bool, error) {
+	if _, err := a.accountDataAccessor.GetAccountByAccountName(ctx, accountName); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return false, nil
 		}
@@ -53,35 +57,45 @@ func (a account) isAccountAccountnameTaken(ctx context.Context, accountname stri
 }
 
 func (a account) CreateAccount(ctx context.Context, params CreateAccountParams) (CreateAccountOutput, error) {
-	accountnameTaken, err := a.isAccountAccountnameTaken(ctx, params.AccountName)
+	var accountID uint64
 
-	if err != nil {
-		return CreateAccountOutput{}, err
-	}
+	txErr := a.goquDatabase.WithTx(func(td *goqu.TxDatabase) error {
+		accountnameTaken, err := a.isAccountAccountNameTaken(ctx, params.AccountName)
 
-	if accountnameTaken {
-		return CreateAccountOutput{}, errors.New("accountname already taken")
-	}
+		if err != nil {
+			return err
+		}
 
-	accountID, err := a.accountDataAccessor.CreateAccount(ctx, database.Account{
-		Accountname: params.AccountName,
+		if accountnameTaken {
+			return errors.New("account name already taken")
+		}
+
+		accountID, err = a.accountDataAccessor.WithDatabase(td).CreateAccount(ctx, database.Account{
+			AccountName: params.AccountName,
+		})
+
+		if err != nil {
+			return err
+		}
+
+		hashedPassword, err := a.hashLogic.Hash(ctx, params.Password)
+
+		if err != nil {
+			return err
+		}
+
+		if err := a.accountPasswordDataAccessor.WithDatabase(td).CreateAccountPassword(ctx, database.AccountPassword{
+			OfAccountID: accountID,
+			Hash:        hashedPassword,
+		}); err != nil {
+			return err
+		}
+
+		return nil
 	})
 
-	if err != nil {
-		return CreateAccountOutput{}, err
-	}
-
-	hashedPassword, err := a.hashLogic.Hash(ctx, params.Password)
-
-	if err != nil {
-		return CreateAccountOutput{}, err
-	}
-
-	if err := a.accountPasswordDataAccessor.CreateAccountPassword(ctx, database.AccountPassword{
-		OfAccountID: accountID,
-		Hash:        hashedPassword,
-	}); err != nil {
-		return CreateAccountOutput{}, err
+	if txErr != nil {
+		return CreateAccountOutput{}, txErr
 	}
 
 	return CreateAccountOutput{
