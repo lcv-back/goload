@@ -35,7 +35,7 @@ func NewAccount(
 	accountDataAccessor database.AccountDataAccessor,
 	accountPasswordDataAccessor database.AccountPasswordDataAccessor,
 	hashLogic Hash,
-) *account {
+) Account {
 	return &account{
 		goquDatabase:                goguDatabase,
 		accountDataAccessor:         accountDataAccessor,
