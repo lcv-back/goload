@@ -117,7 +117,7 @@ func (a account) CreateSession(ctx context.Context, params CreateSessionParams) 
 		return "", err
 	}
 
-	existingAcountPassword, err := a.accountPasswordDataAccessor.GetAccountPassword(ctx, existingAcount.AccountID)
+	existingAcountPassword, err := a.accountPasswordDataAccessor.GetAccountPassword(ctx, existingAcount.ID)
 
 	if err != nil {
 		return "", err
