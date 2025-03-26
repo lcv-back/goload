@@ -60,7 +60,7 @@ build:
 	go build \
 		-ldflags "-X main.version=$(VERSION) -X main.commitHash=$(COMMIT_HASH)" \
 		-o build/$(PROJECT_NAME) \
-		cmd/$(PROJECT_NAME)/*.go
+		./cmd/$(PROJECT_NAME)/*.go
 
 .PHONY: clean
 clean:

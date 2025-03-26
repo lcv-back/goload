@@ -13,6 +13,7 @@ import (
 	"github.com/lcv-back/goload/internal/handler"
 	"github.com/lcv-back/goload/internal/handler/grpc"
 	"github.com/lcv-back/goload/internal/logic"
+	"go.uber.org/zap"
 )
 
 var WireSet = wire.NewSet(
@@ -20,7 +21,13 @@ var WireSet = wire.NewSet(
 	dataaccess.WireSet,
 	logic.WireSet,
 	handler.WireSet,
+	NewLogger,
 )
+
+func NewLogger() *zap.Logger {
+	logger, _ := zap.NewProduction()
+	return logger
+}
 
 func InitializeGRPCServer(configFilePath configs.ConfigFilePath) (grpc.Server, func(), error) {
 	wire.Build(WireSet)

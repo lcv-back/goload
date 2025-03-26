@@ -14,6 +14,7 @@ import (
 	"github.com/lcv-back/goload/internal/handler"
 	"github.com/lcv-back/goload/internal/handler/grpc"
 	"github.com/lcv-back/goload/internal/logic"
+	"go.uber.org/zap"
 )
 
 // Injectors from wire.go:
@@ -29,12 +30,13 @@ func InitializeGRPCServer(configFilePath configs.ConfigFilePath) (grpc.Server, f
 		return nil, nil, err
 	}
 	goquDatabase := database.InitializeGoquDB(db)
-	accountDataAccessor := database.NewAccountDataAccessor(goquDatabase)
-	accountPasswordDataAccessor := database.NewAccountPasswordDataAccessor(goquDatabase)
-	account := config.Account
-	hash := logic.NewHash(account)
-	logicAccount := logic.NewAccount(goquDatabase, accountDataAccessor, accountPasswordDataAccessor, hash)
-	goLoadServiceServer := grpc.NewHandler(logicAccount)
+	logger := NewLogger()
+	accountDataAccessor := database.NewAccountDataAccessor(goquDatabase, logger)
+	accountPasswordDataAccessor := database.NewAccountPasswordDataAccessor(goquDatabase, logger)
+	auth := config.Auth
+	hash := logic.NewHash(auth)
+	account := logic.NewAccount(goquDatabase, accountDataAccessor, accountPasswordDataAccessor, hash)
+	goLoadServiceServer := grpc.NewHandler(account)
 	server := grpc.NewServer(goLoadServiceServer)
 	return server, func() {
 		cleanup()
@@ -43,4 +45,9 @@ func InitializeGRPCServer(configFilePath configs.ConfigFilePath) (grpc.Server, f
 
 // wire.go:
 
-var WireSet = wire.NewSet(configs.WireSet, dataaccess.WireSet, logic.WireSet, handler.WireSet)
+var WireSet = wire.NewSet(configs.WireSet, dataaccess.WireSet, logic.WireSet, handler.WireSet, NewLogger)
+
+func NewLogger() *zap.Logger {
+	logger, _ := zap.NewProduction()
+	return logger
+}
