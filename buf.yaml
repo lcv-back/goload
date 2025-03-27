@@ -1,0 +1,6 @@
+version: v1
+build:
+  sources:
+    - api
+deps:
+  - buf.build/bufbuild/protovalidate

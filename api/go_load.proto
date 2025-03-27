@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package go_load;
 
-import "api/validate.proto";
+import "buf/validate/validate.proto";
 
 option go_package = "grpc/go_load";
 
@@ -73,7 +73,7 @@ message CreateDownloadTaskRequest {
     string token = 1;
     DownloadType download_type = 2;
     string url = 3 [(validate.rules).string = {
-        uri: true,
+        max_len: 2000,
     }];
 }
 
