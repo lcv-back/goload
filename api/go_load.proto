@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package go_load;
 
-import "buf/validate/validate.proto";
+import "validate.proto";
 
 option go_package = "grpc/go_load";
 

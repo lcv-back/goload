@@ -1,0 +1,16 @@
+.openapi-generator-ignore
+index.ts
+models/GoLoadAccount.ts
+models/GoLoadCreateAccountResponse.ts
+models/GoLoadCreateDownloadTaskResponse.ts
+models/GoLoadCreateSessionResponse.ts
+models/GoLoadDownloadStatus.ts
+models/GoLoadDownloadTask.ts
+models/GoLoadDownloadType.ts
+models/GoLoadGetDownloadTaskFileResponse.ts
+models/GoLoadGetDownloadTaskResponse.ts
+models/GoLoadUpdateDownloadTaskResponse.ts
+models/ProtobufAny.ts
+models/RpcStatus.ts
+models/index.ts
+runtime.ts
