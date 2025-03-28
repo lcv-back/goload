@@ -36,7 +36,15 @@ func InitializeGRPCServer(configFilePath configs.ConfigFilePath) (grpc.Server, f
 	auth := config.Auth
 	hash := logic.NewHash(auth)
 	account := logic.NewAccount(goquDatabase, accountDataAccessor, accountPasswordDataAccessor, hash)
-	goLoadServiceServer := grpc.NewHandler(account)
+	tokenPublicKeyDataAccessor := database.NewTokenPublicKeyDataAccessor(goquDatabase, logger)
+	token, err := logic.NewToken(accountDataAccessor, tokenPublicKeyDataAccessor, auth, logger)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
+	downloadTaskDataAccessor := database.NewDownloadTaskDataAccessor(goquDatabase)
+	downloadTask := logic.NewDownloadTask(token, downloadTaskDataAccessor, goquDatabase, logger)
+	goLoadServiceServer := grpc.NewHandler(account, downloadTask)
 	server := grpc.NewServer(goLoadServiceServer)
 	return server, func() {
 		cleanup()
